@@ -30,9 +30,9 @@ sudo mysql_install_db
 sudo mysql_secure_installation
 
 mysql -u root -p
-CREATE DATABASE __mysql_db__ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
-CREATE USER '__mysql_user__'@'localhost' IDENTIFIED BY '__mysql_password__';
-GRANT ALL PRIVILEGES ON __mysql_db__.* TO '__mysql_user__';
+CREATE DATABASE __mysql_db_name__ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+CREATE USER '__mysql_user_name__'@'localhost' IDENTIFIED BY '__mysql_user_password__';
+GRANT ALL PRIVILEGES ON __mysql_db_name__.* TO '__mysql_user_name__'@'localhost';
 FLUSH PRIVILEGES;
 exit;
 
