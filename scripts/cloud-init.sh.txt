@@ -27,7 +27,7 @@ users:
     gecos: __full_name__
     ssh-authorized-keys:
 ##    SSH keys
-      - ssh-rsa AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA== __email_address@domain.tld__
+      - ssh-rsa AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA== __email@domain.tld__
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     groups: sudo
     shell: /bin/bash
@@ -88,7 +88,7 @@ runcmd:
 ## Back up our fail2ban configuration file:
   - cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.original
 ## Set our email address for receiving fail2ban messages:
-  - sed -i -e '/^destemail/s/^.*$/destemail = __email_address@domain.tld__/' /etc/fail2ban/jail.conf
+  - sed -i -e '/^destemail/s/^.*$/destemail = __email@domain.tld__/' /etc/fail2ban/jail.conf
 ## Use sendmail to send email messages:
   - sed -i -e '/^mta/s/^.*$/mta = sendmail/' /etc/fail2ban/jail.conf
 ## Now that we're done configuring fail2ban, restart it:
@@ -237,7 +237,7 @@ runcmd:
 ## Back up our logwatch configuration file:
   - cp /usr/share/logwatch/default.conf/logwatch.conf /usr/share/logwatch/default.conf/logwatch.original
 ## Set our email address for receiving logwatch messages:
-  - sed -i -e 's/^#MailTo.*$/MailTo = __email_address@domain.tld__/' /usr/share/logwatch/default.conf/logwatch.conf
+  - sed -i -e 's/^#MailTo.*$/MailTo = __email@domain.tld__/' /usr/share/logwatch/default.conf/logwatch.conf
 ## Set our default logwatch output format to email:
   - sed -i -e 's/^Output.*$/Output = mail/' /usr/share/logwatch/default.conf/logwatch.conf
 ## Set our default logwatch format to HTML:
@@ -304,9 +304,9 @@ runcmd:
   - echo 'CONFIGURING PUBLIC FOLDERS'
   - printf '=======\n\n'
 ## Make the directory that will contain the public web server files to be served by the nginx server block:
-  - mkdir -p /home/__username__/www/__site_domain.tld__/logs
+  - mkdir -p /home/__username__/www/__domain.tld__/logs
 ## Set permissions on the public web server files:
-  - chmod -R 755 /home/__username__/www/__site_domain.tld__
+  - chmod -R 755 /home/__username__/www/__domain.tld__
 
 #####################
 ## SITES-AVAILABLE ##
@@ -317,9 +317,9 @@ runcmd:
 ## Add the sites-available and sites-enabled folders because the nginx mainline doesn't have them
   - mkdir /etc/nginx/sites-available /etc/nginx/sites-enabled
 ## Grab our nginx sites-available config files off GitHub Gist and make 'em
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.2.1/templates/etc/nginx/sites-available/__site_domain.tld__.txt -o /etc/nginx/sites-available/__site_domain.tld__
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.3.0/templates/etc/nginx/sites-available/__domain.tld__.txt -o /etc/nginx/sites-available/__domain.tld__
 ## Symlink all server block sites-available definition files in the sites-enabled folder:
-  - ln -s /etc/nginx/sites-available/__site_domain.tld__ /etc/nginx/sites-enabled/
+  - ln -s /etc/nginx/sites-available/__domain.tld__ /etc/nginx/sites-enabled/
 ## Change owner of public web server files to default user:
   - chown -R __username__:__username__ /home/__username__/www/
 
@@ -340,10 +340,10 @@ runcmd:
 ## Back up our original nginx configuration file:
   - mv /etc/nginx/nginx.conf /etc/nginx/nginx.original
 ## Grab our new nginx configuration file:
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.2.1/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.3.0/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
 ## Update fastcgi_params for PHP
   - mv /etc/nginx/fastcgi_params /etc/nginx/fastcgi_params.original
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.2.1/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.3.0/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
 ## Test our nginx config
   - nginx -t
 ## Change php user and group to new user
@@ -383,3 +383,15 @@ power_state:
   message: "Goodbye!"
   timeout: 30
   condition: True
+
+################################################################################
+################################################################################
+
+#############################
+## PLACEHOLDERS TO REPLACE ##
+#############################
+## __username__ - the username of the primary admin user that will be created on the server (e.g. dane)
+## __full_name__ - the full name of the primary admin user (e.g. Dane Petersen)
+## __email@domain.tld__ - the email address of the primary admin user
+## __domain.tld__ - the domain for your website that will be hosted by nginx (e.g. thegreatsunra.com)
+## __temporary_password_change_me_immediately__ - a temporary password that you will change immediately after logging into the server
