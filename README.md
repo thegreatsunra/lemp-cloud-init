@@ -56,7 +56,7 @@ Be careful not to delete the indentation or `- ` at the beginning of the line, a
 
 4) Click "Create" and wait a few moments as Digital Ocean creats your new droplet
 
-5) Once Digital Ocean finishes creating your droplet, copy the IP address for your droplet and shell into your server
+5) Once Digital Ocean finishes creating your droplet, copy the IP address for your droplet
 
 #### Prepare manual commands
 
