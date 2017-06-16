@@ -37,6 +37,12 @@ FLUSH PRIVILEGES;
 exit;
 
 sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate /ssl_certificate /' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate_key /ssl_certificate_key /' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate /ssl_certificate /' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate_key /ssl_certificate_key /' /etc/nginx/sites-available/__site_domain.tld__ && sudo service nginx restart
+## Change the placeholder user value in /etc/nginx/nginx.conf to your username
+sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/nginx.conf
+
+sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/sites-available/domain.tld
+sudo sed -i -e 's/__domain.tld__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__/' /etc/nginx/sites-available/domain.tld
+
 
 ## Create the hostname
 lsattr /etc/hostname && sudo chattr -i /etc/hostname
