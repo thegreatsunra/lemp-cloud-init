@@ -43,6 +43,12 @@ sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/'
 sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/sites-available/domain.tld
 sudo sed -i -e 's/__domain.tld__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__/' /etc/nginx/sites-available/domain.tld
 
+## Test the new nginx config
+sudo nginx -t
+## Start nginx
+sudo service nginx start
+## Start PHP (in case it hasn't started yet)
+sudo service php7.1-fpm start
 
 ## Create the hostname
 lsattr /etc/hostname && sudo chattr -i /etc/hostname
