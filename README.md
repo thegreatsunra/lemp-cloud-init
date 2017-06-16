@@ -4,7 +4,7 @@
 
 ### Notes
 
-* Variables are delimited with `__double_underscores__`
+* Placeholder values are delimited with `__double_underscores__`
 
 ## License
 
