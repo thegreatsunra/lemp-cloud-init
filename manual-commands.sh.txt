@@ -1,0 +1,61 @@
+#####################
+## MANUAL COMMANDS ##
+#####################
+
+## Login to new server:
+ssh __username__@__server_ip_address__
+
+## Monitor cloud-init script progress
+grc tail -fn+1 /var/log/cloud-init-output.log
+
+## Change passwords
+sudo passwd root
+sudo passwd __username__
+
+## Install and configure mysql
+sudo apt install -y mariadb-server php-mysql
+sudo mysql_install_db
+sudo mysql_secure_installation
+
+mysql -u root -p
+CREATE DATABASE __mysql_db__ CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+CREATE USER '__mysql_user__'@'localhost' IDENTIFIED BY '__mysql_password__';
+GRANT ALL PRIVILEGES ON __mysql_db__.* TO '__mysql_user__';
+FLUSH PRIVILEGES;
+exit;
+
+sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# listen \[::\]:443 ssl http2;/listen \[::\]:443 ssl http2;/' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate /ssl_certificate /' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate_key /ssl_certificate_key /' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate /ssl_certificate /' /etc/nginx/sites-available/__site_domain.tld__ && sudo sed -i -e 's/# ssl_certificate_key /ssl_certificate_key /' /etc/nginx/sites-available/__site_domain.tld__ && sudo service nginx restart
+
+## Create the hostname
+lsattr /etc/hostname && sudo chattr -i /etc/hostname
+sudo sh -c "echo '__server_name.domain.tld__' > /etc/hostname"
+sudo hostname -F /etc/hostname
+sudo chattr +i /etc/hostname
+
+## Install and configure sendmail
+sudo apt install -y sendmail sendmail-bin
+sudo sendmailconfig
+
+## Install zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" && chsh -s /bin/zsh
+
+## UPDATE DNS FOR SITE DOMAINS TO IP ADDRESS OF NEW SERVER
+
+## Run certbot for all domains:
+## (this should be done only after we have updated the site's DNS to point to the new IP address)
+sudo certbot certonly --email __email_address@domain.tld__ --agree-tos --webroot -w /home/__username__/www/__site_domain.tld__/public -d __site_domain.tld__ && sudo certbot certonly --email __email_address@domain.tld__ --agree-tos --webroot -w /home/__username__/www/__site_domain.tld__/public -d __site_domain.tld__
+
+## Reboot the system
+sudo reboot
+
+## Remove unnecessary packages
+sudo apt autoremove -y
+
+## Run rootkit hunter
+sudo rkhunter --checkall --skip-keypress
+
+## Run check rootkit
+sudo chkrootkit
+
+## Run lynis security audit
+sudo lynis audit system --quick
