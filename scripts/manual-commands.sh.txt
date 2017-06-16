@@ -6,6 +6,9 @@
 ssh __username__@__server_ip_address__
 
 ## Monitor cloud-init script progress
+tail -fn+1 /var/log/cloud-init-output.log
+
+## You can view better-looking logs once grc is installed
 grc tail -fn+1 /var/log/cloud-init-output.log
 
 ## Change passwords
