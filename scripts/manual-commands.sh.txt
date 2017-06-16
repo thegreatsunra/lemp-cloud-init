@@ -3,7 +3,7 @@
 #####################
 
 ## Login to new server:
-ssh __username__@__server_ip_address__
+ssh __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__@__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_SERVER_IP__
 
 ## Monitor cloud-init script progress
 tail -fn+1 /var/log/cloud-init-output.log
@@ -13,7 +13,7 @@ grc tail -fn+1 /var/log/cloud-init-output.log
 
 ## Change passwords
 sudo passwd root
-sudo passwd __username__
+sudo passwd __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__
 
 ## Install and configure mysql
 ## You'll be prompted to enter a new password for the mysql root user
@@ -40,8 +40,8 @@ sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sit
 ## Change the placeholder user value in /etc/nginx/nginx.conf to your username
 sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/nginx.conf
 
-sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/sites-available/domain.tld
-sudo sed -i -e 's/__domain.tld__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__/' /etc/nginx/sites-available/domain.tld
+sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/sites-available/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__
+sudo sed -i -e 's/__domain.tld__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__/' /etc/nginx/sites-available/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__
 
 ## Test the new nginx config
 sudo nginx -t
@@ -52,7 +52,7 @@ sudo service php7.1-fpm start
 
 ## Create the hostname
 lsattr /etc/hostname && sudo chattr -i /etc/hostname
-sudo sh -c "echo '__server_name.domain.tld__' > /etc/hostname"
+sudo sh -c "echo '__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_SERVER_DOMAIN_NAME__' > /etc/hostname"
 sudo hostname -F /etc/hostname
 sudo chattr +i /etc/hostname
 
