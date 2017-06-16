@@ -383,3 +383,15 @@ power_state:
   message: "Goodbye!"
   timeout: 30
   condition: True
+
+################################################################################
+################################################################################
+
+#############################
+## PLACEHOLDERS TO REPLACE ##
+#############################
+## __username__ - the username of the primary admin user that will be created on the server (e.g. dane)
+## __full_name__ - the full name of the primary admin user (e.g. Dane Petersen)
+## __email@domain.tld__ - the email address of the primary admin user
+## __domain.tld__ - the domain for your website that will be hosted by nginx (e.g. thegreatsunra.com)
+## __temporary_password_change_me_immediately__ - a temporary password that you will change immediately after logging into the server

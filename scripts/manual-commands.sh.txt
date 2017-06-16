@@ -85,3 +85,15 @@ sudo chkrootkit
 
 ## Run lynis security audit
 sudo lynis audit system --quick
+
+################################################################################
+################################################################################
+
+#############################
+## PLACEHOLDERS TO REPLACE ##
+#############################
+## __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_SERVER_IP__ - the IP address Digital Ocean assigned to your server
+## __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__ - the username of the primary admin user that will be created on the server (e.g. dane)
+## __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_EMAIL__ - the email address of the primary admin user
+## __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__ - the domain for your website that will be hosted by nginx (e.g. thegreatsunra.com)
+## __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_SERVER_DOMAIN_NAME__ - the domain for your server (e.g. swearengen.thegreatsunra.com)
