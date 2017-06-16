@@ -1,6 +1,6 @@
-# cloud-init
+# lemp-cloud-init
 
-> Spin up a new Ubuntu, Nginx, PHP, MariaDB server on Digital Ocean
+> Spin up a new Ubuntu, Nginx, MariaDB, PHP server on Digital Ocean
 
 ## License
 
