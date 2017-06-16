@@ -317,7 +317,7 @@ runcmd:
 ## Add the sites-available and sites-enabled folders because the nginx mainline doesn't have them
   - mkdir /etc/nginx/sites-available /etc/nginx/sites-enabled
 ## Grab our nginx sites-available config files off GitHub Gist and make 'em
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.1.0/templates/etc/nginx/sites-available/__site_domain.tld__.txt -o /etc/nginx/sites-available/__site_domain.tld__
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.2.0/templates/etc/nginx/sites-available/__site_domain.tld__.txt -o /etc/nginx/sites-available/__site_domain.tld__
 ## Symlink all server block sites-available definition files in the sites-enabled folder:
   - ln -s /etc/nginx/sites-available/__site_domain.tld__ /etc/nginx/sites-enabled/
 ## Change owner of public web server files to default user:
@@ -340,10 +340,10 @@ runcmd:
 ## Back up our original nginx configuration file:
   - mv /etc/nginx/nginx.conf /etc/nginx/nginx.original
 ## Grab our new nginx configuration file:
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.1.0/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.2.0/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
 ## Update fastcgi_params for PHP
   - mv /etc/nginx/fastcgi_params /etc/nginx/fastcgi_params.original
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.1.0/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.2.0/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
 ## Test our nginx config
   - nginx -t
 ## Change php user and group to new user
