@@ -7,15 +7,15 @@ server {
     # listen [::]:443 ssl http2;
 
     ## UNCOMMENT ONCE SSL IS ENABLED
-    # ssl_certificate /etc/letsencrypt/live/__site_address.domain__/fullchain.pem;
-    # ssl_certificate_key /etc/letsencrypt/live/__site_address.domain__/privkey.pem;
+    # ssl_certificate /etc/letsencrypt/live/__domain.tld__/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/__domain.tld__/privkey.pem;
     
-    server_name __site_address.domain__;
+    server_name __domain.tld__;
 
-    access_log /home/__username__/www/__site_address.domain__/logs/access.log;
-    error_log /home/__username__/www/__site_address.domain__/logs/error.log;
+    access_log /home/__username__/www/__domain.tld__/logs/access.log;
+    error_log /home/__username__/www/__domain.tld__/logs/error.log;
 
-    root /home/__username__/www/__site_address.domain__/public/;
+    root /home/__username__/www/__domain.tld__/public/;
     index index.html index.php;
 
     location = /favicon.ico {
