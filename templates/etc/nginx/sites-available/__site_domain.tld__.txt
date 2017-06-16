@@ -1,0 +1,66 @@
+server {
+    listen 80;
+    listen [::]:80;
+    
+    ## UNCOMMENT ONCE SSL IS ENABLED
+    # listen 443 ssl http2;
+    # listen [::]:443 ssl http2;
+
+    ## UNCOMMENT ONCE SSL IS ENABLED
+    # ssl_certificate /etc/letsencrypt/live/__domain.tld__/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/__domain.tld__/privkey.pem;
+    
+    server_name __domain.tld__;
+
+    access_log /home/__username__/www/__domain.tld__/logs/access.log;
+    error_log /home/__username__/www/__domain.tld__/logs/error.log;
+
+    root /home/__username__/www/__domain.tld__/public/;
+    index index.html index.php;
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+
+    # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).
+    # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+    location ~ /\.ht {
+        deny all;
+    }
+
+    # Deny access to any files with a .php extension in the uploads directory
+    # Works in sub-directory installs and also in multisite network
+    # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+    location ~* /(?:uploads|files)/.*\.php$ {
+        deny all;
+    }
+    
+    location / {
+        # This is cool because no php is touched for static content.
+        # include the "?$args" part so non-default permalinks doesn't break when using query string
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param     PATH_INFO         $fastcgi_path_info;
+        fastcgi_param     SCRIPT_FILENAME   $document_root$fastcgi_script_name;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        expires max;
+        log_not_found off;
+    }
+}

@@ -1,0 +1,385 @@
+#cloud-config
+
+package_upgrade: true
+packages:
+  - apt-listchanges
+  - apt-show-versions
+  - chkrootkit
+  - debsecan
+  - debsums
+  - denyhosts
+  - dialog
+  - fail2ban
+  - fcgiwrap
+  - grc
+  - language-pack-en-base
+  - libpam-tmpdir
+  - logwatch
+  - nmap
+  - psad
+  - rkhunter
+#  - sendmail
+#  - sendmail-bin
+  - software-properties-common
+  - zsh
+users:
+  - name: __username__
+    gecos: __full_name__
+    ssh-authorized-keys:
+##    SSH keys
+      - ssh-rsa AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA== __email_address@domain.tld__
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    shell: /bin/bash
+runcmd:
+  - printf '\n\n=======\n'
+  - echo 'BEGIN RUNCMD'
+  - printf '=======\n\n'
+
+#########
+## SSH ##
+#########
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING SSH'
+  - printf '=======\n\n'
+## Temporarily stop fail2ban as we secure SSH:
+  - service fail2ban stop
+## Back up our SSH configuration file:
+  - cp /etc/ssh/sshd_config /etc/ssh/_sshd_config.original
+## Change the default SSH port to something else:
+#  - sed -i -e '/^Port/s/^.*$/Port 4444/' /etc/ssh/sshd_config
+## If there's a duplicate PasswordAuthentication line, get rid of it: (?)
+  - sed -i -e '/^PasswordAuthentication/s/^.*$//' /etc/ssh/sshd_config
+## If there's a commented-out PasswordAuthentication line, disable password authentication:
+  - sed -i -e '/^#PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+## Prevent root login via SSH:
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+## Disable X11Forwarding:
+  - sed -i -e '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+## Whatever is currently set for UsePrivilegeSeparation, set it to sandbox:
+  - sed -i -e '/^UsePrivilegeSeparation/s/^.*$/UsePrivilegeSeparation sandbox/' /etc/ssh/sshd_config
+## Disable TCPKeepAlive:
+  - sed -i -e '/^TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
+## Set logging level to verbose: (I think some log analysis tools count on this)
+  - sed -i -e '/^LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
+## Add a comment that we're gonna add some things below:
+  - sed -i -e '$a# Added by cloud-config init process' /etc/ssh/sshd_config
+## Restrict SSH access to only our one allowed user:
+  - sed -i -e '$aAllowUsers __username__' /etc/ssh/sshd_config
+## Disable AllowTcpForwarding:
+  - sed -i -e '$aAllowTcpForwarding no' /etc/ssh/sshd_config
+## Disable compression:
+  - sed -i -e '$aCompression no' /etc/ssh/sshd_config
+## Disable AllowAgentForwarding:
+  - sed -i -e '$aAllowAgentForwarding no' /etc/ssh/sshd_config
+## Set UsePrivilegeSeparation to sandbox: (you already do this above, though)
+#  - sed -i -e '$aUsePrivilegeSeparation sandbox' /etc/ssh/sshd_config
+## Set the maximum sessions to 2:
+  - sed -i -e '$aMaxSessions 2' /etc/ssh/sshd_config
+## Now that we're done securing SSH, restart it: (this might disrupt SSH access, but so far that doesn't seem to be happening)
+  - /etc/init.d/ssh restart
+
+##############
+## FAIL2BAN ##
+##############
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING FAIL2BAN'
+  - printf '=======\n\n'
+## Back up our fail2ban configuration file:
+  - cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.original
+## Set our email address for receiving fail2ban messages:
+  - sed -i -e '/^destemail/s/^.*$/destemail = __email_address@domain.tld__/' /etc/fail2ban/jail.conf
+## Use sendmail to send email messages:
+  - sed -i -e '/^mta/s/^.*$/mta = sendmail/' /etc/fail2ban/jail.conf
+## Now that we're done configuring fail2ban, restart it:
+  - service fail2ban start
+
+##################
+## APT UPGRADES ##
+##################
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING APT UPGRADES'
+  - printf '=======\n\n'
+## Create a folder for backing up our apt configurations: (necessary because apt pattern matches all configuration files in its folder, regardless of extension)
+  - mkdir /etc/apt/apt.conf.d/original
+## Create a backup of our unattended-upgrades configuration file:
+  - cp /etc/apt/apt.conf.d/50unattended-upgrades /etc/apt/apt.conf.d/original/50unattended-upgrades.original
+## Uncomment the line for updates:
+  - sed -i -e 's,//[ \t]*"${distro_id}:${distro_codename}-updates,\t"${distro_id}:${distro_codename}-updates,' /etc/apt/apt.conf.d/50unattended-upgrades
+## Uncomment the line for automatically rebooting the system if an automatic update requires it, and set a time for when it should happen:
+  - sed -i -e 's,//Unattended-Upgrade::Automatic-Reboot-Time "[0-9:]\+";,Unattended-Upgrade::Automatic-Reboot-Time "3:00";,' /etc/apt/apt.conf.d/50unattended-upgrades
+## Create a backup of our periodic configuration file:
+  - cp /etc/apt/apt.conf.d/10periodic /etc/apt/apt.conf.d/original/10periodic.original
+## Set automatic updates of package lists to true:
+  - sed -i -e 's/Update-Package-Lists "[0-9]\+";/Update-Package-Lists "1";/' /etc/apt/apt.conf.d/10periodic
+## Set automatic download of upgradeable packages to true:
+  - sed -i -e 's/Download-Upgradeable-Packages "[0-9]\+";/Download-Upgradeable-Packages "1";/' /etc/apt/apt.conf.d/10periodic
+## Set interval for automatically removing unused packages to once a week:
+  - sed -i -e 's/AutocleanInterval "[0-9]\+";/AutocleanInterval "7";/' /etc/apt/apt.conf.d/10periodic
+## Set automatic unattended upgrades of periodic packages to true: (this means to automatically apply feature updates, not just security updates, I think)
+  - sed -i -e '$aAPT::Periodic::Unattended-Upgrade "1";' /etc/apt/apt.conf.d/10periodic
+  - apt update -y
+  - apt upgrade -y
+  
+#############
+## CERTBOT ##
+#############
+  - printf '\n\n=======\n'
+  - echo 'INSTALLING CERTBOT'
+  - printf '=======\n\n'
+  - add-apt-repository -y ppa:certbot/certbot
+  - apt update -y
+  - apt install -y certbot
+
+###########
+## PASSWD #
+###########
+  - printf '\n\n=======\n'
+  - echo 'CHANGING PASSWDS'
+  - printf '=======\n\n'
+  - echo "root:__temporary_password_change_me_immediately__"|chpasswd
+  - echo "__username__:__temporary_password_change_me_immediately__"|chpasswd
+
+###########
+## NGINX ##
+###########
+  - printf '\n\n=======\n'
+  - echo 'INSTALLING NGINX'
+  - printf '=======\n\n'
+  - wget http://nginx.org/keys/nginx_signing.key -P /home/__username__/
+  - apt-key add /home/__username__/nginx_signing.key
+  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
+  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
+  - apt update -y
+  - DEBIAN_FRONTEND=noninteractive apt install -y nginx
+
+#########
+## PHP ##
+#########
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING PHP'
+  - printf '=======\n\n'
+  - LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php
+  - apt update -y
+  - DEBIAN_FRONTEND=noninteractive apt install -y php7.1-fpm php7.1-common php7.1-mysqlnd php7.1-xmlrpc php7.1-curl php7.1-gd php7.1-imagick php7.1-cli php-pear php7.1-dev php7.1-imap php7.1-mcrypt
+## Back up our php.ini configuration file:
+  - cp /etc/php/7.1/fpm/php.ini /etc/php/7.1/fpm/_php.ini.original
+## Set cgi fix_pathinfo to true (we're protected in other ways, and I absolutely could not get PHP to work without enabling this):
+  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.1/fpm/php.ini
+
+############################
+## ADDING APT FOR MARIADB ##
+############################
+  - printf '\n\n=======\n'
+  - echo 'ADDING APT FOR MARIADB'
+  - printf '=======\n\n'
+  - apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+  - add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirror.sax.uk.as61049.net/mariadb/repo/10.1/ubuntu xenial main' -y
+  - apt update -y
+
+##############
+## TIMEZONE ##
+##############
+  - printf '\n'
+  - echo 'CONFIGURING TIMEZONE'
+  - printf '\n'
+## Set the system's timezone:
+## Common options: America/New_York    America/Chicago     America/Denver    America/Los_Angeles
+  - timedatectl set-timezone America/Los_Angeles
+## Start and stop cronjobs, as sometimes changing the timezone can screw them up:
+  - /etc/init.d/cron stop
+  - /etc/init.d/cron start
+## Start and stop denyhosts, as sometimes changing the timezone can screw them up:
+  - /etc/init.d/denyhosts stop
+  - /etc/init.d/denyhosts start
+
+#########
+## UFW ##
+#########
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING UFW'
+  - printf '=======\n\n'
+## Temporarily disable uncomplicated firewall as we're going to start configuring it:
+  - ufw disable
+## Create backups of our firewall rules:
+  - cp /etc/ufw/before.rules /etc/ufw/before.original
+  - cp /etc/ufw/before6.rules /etc/ufw/before6.original
+## Add custom logging rules for psad right above the final commit line:
+  - perl -0777 -i.original -pe "s@# don\'t delete the \'COMMIT\' line or these rules won\'t be processed\nCOMMIT@# custom logging directives for psad\n-A INPUT -j LOG\n-A FORWARD -j LOG\n\n# don\'t delete the \'COMMIT\' line or these rules won\'t be processed\nCOMMIT@igs" /etc/ufw/before.rules
+  - perl -0777 -i.original -pe "s@# don\'t delete the \'COMMIT\' line or these rules won\'t be processed\nCOMMIT@# custom logging directives for psad\n-A INPUT -j LOG\n-A FORWARD -j LOG\n\n# don\'t delete the \'COMMIT\' line or these rules won\'t be processed\nCOMMIT@igs" /etc/ufw/before6.rules
+## Allow SSH on the default ports:
+  - ufw allow ssh
+## Deny requests on the default SSH ports:
+#  - ufw deny ssh
+## Allow requests on updated SSH port:
+#  - ufw allow 4444/tcp
+## Allow requests on the http port:
+  - ufw allow http
+## Allow requests on the https port:
+  - ufw allow https
+## Allow nginx over HTTP:
+#  - ufw allow 'Nginx HTTP'
+## Allow nginx over HTTPS:
+#  - ufw allow 'Nginx HTTPS'
+## Turn on logging:
+  - ufw logging on
+## Enable uncomplicated firewall now that we have it configured:
+  - ufw enable
+## Show the rules that are active:
+  - ufw status verbose
+
+##############
+## LOGWATCH ##
+##############
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING LOGWATCH'
+  - printf '=======\n\n'
+## Back up our logwatch configuration file:
+  - cp /usr/share/logwatch/default.conf/logwatch.conf /usr/share/logwatch/default.conf/logwatch.original
+## Set our email address for receiving logwatch messages:
+  - sed -i -e 's/^#MailTo.*$/MailTo = __email_address@domain.tld__/' /usr/share/logwatch/default.conf/logwatch.conf
+## Set our default logwatch output format to email:
+  - sed -i -e 's/^Output.*$/Output = mail/' /usr/share/logwatch/default.conf/logwatch.conf
+## Set our default logwatch format to HTML:
+  - sed -i -e 's/^Format.*$/Format = html/' /usr/share/logwatch/default.conf/logwatch.conf
+
+###############
+## BLACKLIST ##
+###############
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING BLACKLIST'
+  - printf '=======\n\n'
+## Back up our blacklist.conf configuration file:
+  - cp /etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.original
+## Blacklist USB storage:
+  - echo "blacklist usb-storage" | tee -a /etc/modprobe.d/blacklist.conf
+
+###############
+## INITRAMFS ##
+###############
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING INITRAMFS'
+  - printf '=======\n\n'
+## Init some security somethingoranother around RAM:
+  - update-initramfs -u
+
+##############
+## RKHUNTER ##
+##############
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING RKHUNTER'
+  - printf '=======\n\n'
+## Update rookit hunter and update its properties definition list:
+  - rkhunter --update && rkhunter --propupd
+
+###########
+## LYNIS ##
+###########
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING LYNIS'
+  - printf '=======\n\n'
+## Add a keyserver for grabbing the latest version of lynis off their own package server:
+  - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
+## Add the URL for lynis' package server:
+  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ xenial main' >> /etc/apt/sources.list.d/cisofy-lynis.list
+## Grab latest apt updates now that we can query lynis' package server, and install the latest available version of lynis:
+  - apt update
+  - DEBIAN_FRONTEND=noninteractive apt install -y lynis
+
+#################
+## PHP + NGINX ##
+#################
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING MORE PHP AND NGINX'
+  - printf '=======\n\n'
+## Stop PHP because we're gonna make index.php a legit default route file:
+  - service php7.1-fpm stop
+## Stop nginx because we're going to configure some PHP stuff and a whole lotta server blocks:
+  - service nginx stop
+
+####################
+## PUBLIC FOLDERS ##
+####################
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING PUBLIC FOLDERS'
+  - printf '=======\n\n'
+## Make the directory that will contain the public web server files to be served by the nginx server block:
+  - mkdir -p /home/__username__/www/__site_domain.tld__/logs
+## Set permissions on the public web server files:
+  - chmod -R 755 /home/__username__/www/__site_domain.tld__
+
+#####################
+## SITES-AVAILABLE ##
+#####################
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING SITES-AVAILABLE'
+  - printf '=======\n\n'
+## Add the sites-available and sites-enabled folders because the nginx mainline doesn't have them
+  - mkdir /etc/nginx/sites-available /etc/nginx/sites-enabled
+## Grab our nginx sites-available config files off GitHub Gist and make 'em
+  - curl https://gist.githubusercontent.com/thegreatsunra/c48002b51c338ebcecccf48bd5ce88c5/raw/a5b8e525c389a028001dac3355e107743f7c856c/nginx-site-config.txt -o /etc/nginx/sites-available/__site_domain.tld__
+## Symlink all server block sites-available definition files in the sites-enabled folder:
+  - ln -s /etc/nginx/sites-available/__site_domain.tld__ /etc/nginx/sites-enabled/
+## Change owner of public web server files to default user:
+  - chown -R __username__:__username__ /home/__username__/www/
+
+################
+## NGINX.CONF ##
+################
+  - printf '\n\n=======\n'
+  - echo 'EDITING NGINX.CONF'
+  - printf '=======\n\n'
+  - printf '\n\n=======\n'
+  - echo 'PROCESSOR COUNT:'
+  - grep processor /proc/cpuinfo | wc -l
+  - printf '=======\n\n'
+  - printf '\n\n=======\n'
+  - echo 'OPEN FILE LIMIT:'
+  - ulimit -n
+  - printf '=======\n\n'
+## Back up our original nginx configuration file:
+  - mv /etc/nginx/nginx.conf /etc/nginx/nginx.original
+## Grab our new nginx configuration file:
+  - curl https://gist.githubusercontent.com/thegreatsunra/5df31b0ca45a7a7838079e9db856ad02/raw/f143dc92e5ad5ce3c8680996280d8f63d3bee8cb/nginx.conf.txt -o /etc/nginx/nginx.conf
+## Update fastcgi_params for PHP
+  - mv /etc/nginx/fastcgi_params /etc/nginx/fastcgi_params.original
+  - curl https://gist.githubusercontent.com/thegreatsunra/475c411ee30a31d8319ada137da50a2c/raw/b99ffe3cfb35a7b4ce0bb0ebd2b9f48b909fab93/fastcgi_params.txt -o /etc/nginx/fastcgi_params
+## Test our nginx config
+  - nginx -t
+## Change php user and group to new user
+  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.1/fpm/pool.d/www.conf
+## Test our php config
+  - php-fpm7.1 -t
+## Start PHP:
+  - service php7.1-fpm start
+## Start nginx:
+  - service nginx start
+
+#####################
+## INSTALL UPDATES ##
+#####################
+  - printf '\n\n=======\n'
+  - echo 'INSTALLING UPDATES'
+  - printf '=======\n\n'
+  - apt update -y
+  - apt upgrade -y
+
+################
+## END RUNCMD ##
+################
+  - printf '\n\n=======\n'
+  - echo 'END RUNCMD'
+  - printf '=======\n\n'
+
+## Restart the server:
+power_state:
+  mode: reboot
+  delay: "now"
+  message: "Goodbye!"
+  timeout: 30
+  condition: True

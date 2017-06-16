@@ -1,6 +1,13 @@
-# cloud-init
+# lemp-cloud-init
 
-> Spin up a new Ubuntu, Nginx, PHP, MariaDB server on Digital Ocean
+> Spin up a new Ubuntu, Nginx, MariaDB, PHP server on Digital Ocean
+<<<<<<< Updated upstream
+
+### Notes
+
+* Placeholder values are delimited with `__double_underscores__`
+=======
+>>>>>>> Stashed changes
 
 ## License
 
