@@ -2,6 +2,10 @@
 
 > Spin up a new Ubuntu, Nginx, MariaDB, PHP server on Digital Ocean
 
+### Notes
+
+* Variables are delimited with `__double_underscores__`
+
 ## License
 
 The MIT License (MIT)
