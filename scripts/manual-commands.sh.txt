@@ -16,8 +16,17 @@ sudo passwd root
 sudo passwd __username__
 
 ## Install and configure mysql
+## You'll be prompted to enter a new password for the mysql root user
 sudo apt install -y mariadb-server php-mysql
+## This task will appear to freeze and timeout after 30 seconds
+## Don't interrupt it, as it seems to achieve the desired results anyway
 sudo mysql_install_db
+## 1) supply mysql root password
+## 2) change root password? N
+## 3) remove anonymous users? Y
+## 4) disallow remote root login? Y
+## 5) remove test database and access? Y
+## 6) reload privilege database? Y
 sudo mysql_secure_installation
 
 mysql -u root -p
