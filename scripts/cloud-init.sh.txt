@@ -119,8 +119,8 @@ runcmd:
   - sed -i -e 's/AutocleanInterval "[0-9]\+";/AutocleanInterval "7";/' /etc/apt/apt.conf.d/10periodic
 ## Set automatic unattended upgrades of periodic packages to true: (this means to automatically apply feature updates, not just security updates, I think)
   - sed -i -e '$aAPT::Periodic::Unattended-Upgrade "1";' /etc/apt/apt.conf.d/10periodic
-  - apt update -y
-  - apt upgrade -y
+  - apt update -yq
+  - apt upgrade -yq
   
 #############
 ## CERTBOT ##
@@ -129,8 +129,8 @@ runcmd:
   - echo 'INSTALLING CERTBOT'
   - printf '=======\n\n'
   - add-apt-repository -y ppa:certbot/certbot
-  - apt update -y
-  - apt install -y certbot
+  - apt update -yq
+  - DEBIAN_FRONTEND=noninteractive apt install -yq certbot
 
 ###########
 ## PASSWD #
@@ -151,8 +151,8 @@ runcmd:
   - apt-key add /home/__username__/nginx_signing.key
   - echo 'deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
   - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
-  - apt update -y
-  - DEBIAN_FRONTEND=noninteractive apt install -y nginx
+  - apt update -yq
+  - DEBIAN_FRONTEND=noninteractive apt install -yq nginx
 
 #########
 ## PHP ##
@@ -367,8 +367,8 @@ runcmd:
   - printf '\n\n=======\n'
   - echo 'INSTALLING UPDATES'
   - printf '=======\n\n'
-  - apt update -y
-  - apt upgrade -y
+  - apt update -yq
+  - apt upgrade -yq
 
 ################
 ## END RUNCMD ##
