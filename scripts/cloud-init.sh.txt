@@ -271,7 +271,8 @@ runcmd:
   - echo 'CONFIGURING RKHUNTER'
   - printf '=======\n\n'
 ## Update rookit hunter and update its properties definition list:
-  - rkhunter --update && rkhunter --propupd
+  - rkhunter --update
+  - rkhunter --propupd
 
 ###########
 ## LYNIS ##
