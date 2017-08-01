@@ -51,7 +51,7 @@ sudo service nginx start
 sudo service php7.1-fpm start
 
 ## Install and configure sendmail
-sudo apt install -y sendmail sendmail-bin
+sudo apt install -yq sendmail sendmail-bin
 # Configure with existing? Y
 # Configure with existing? Y
 # Reload? Y
@@ -71,9 +71,6 @@ sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sit
 
 ## Reboot the system
 sudo reboot
-
-## Remove unnecessary packages
-sudo apt autoremove -y
 
 ## Run rootkit hunter
 sudo rkhunter --checkall --skip-keypress
