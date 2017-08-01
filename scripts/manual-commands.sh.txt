@@ -72,9 +72,6 @@ sudo sed -i -e 's/# listen 443 ssl http2;/listen 443 ssl http2;/' /etc/nginx/sit
 ## Reboot the system
 sudo reboot
 
-## Remove unnecessary packages
-sudo apt autoremove -y
-
 ## Run rootkit hunter
 sudo rkhunter --checkall --skip-keypress
 
