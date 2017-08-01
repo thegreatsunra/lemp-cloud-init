@@ -284,8 +284,8 @@ runcmd:
 ## Add the URL for lynis' package server:
   - echo 'deb https://packages.cisofy.com/community/lynis/deb/ xenial main' >> /etc/apt/sources.list.d/cisofy-lynis.list
 ## Grab latest apt updates now that we can query lynis' package server, and install the latest available version of lynis:
-  - apt update
-  - DEBIAN_FRONTEND=noninteractive apt install -y lynis
+  - apt update -yq
+  - DEBIAN_FRONTEND=noninteractive apt install -yq lynis
 
 #################
 ## PHP + NGINX ##
