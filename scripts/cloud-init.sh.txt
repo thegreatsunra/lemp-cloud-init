@@ -288,7 +288,7 @@ runcmd:
 ## Add a keyserver for grabbing the latest version of lynis off their own package server:
   - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
 ## Add the URL for lynis' package server:
-  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ bionic main' >> /etc/apt/sources.list.d/cisofy-lynis.list
+  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ xenial main' >> /etc/apt/sources.list.d/cisofy-lynis.list
 ## Grab latest apt updates now that we can query lynis' package server, and install the latest available version of lynis:
   - apt update -yq
   - DEBIAN_FRONTEND=noninteractive apt install -yq lynis
