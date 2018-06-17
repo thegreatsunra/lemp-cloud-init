@@ -39,9 +39,6 @@ GRANT ALL PRIVILEGES ON __mysql_db_name__.* TO '__mysql_user_name__'@'localhost'
 FLUSH PRIVILEGES;
 exit;
 
-## Change the placeholder user value in /etc/nginx/nginx.conf to your username
-sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/nginx.conf
-
 sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/sites-available/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__
 sudo sed -i -e 's/__domain.tld__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__/' /etc/nginx/sites-available/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__
 
