@@ -275,7 +275,6 @@ runcmd:
   - sed -i -e 's/^UPDATE_MIRRORS=0$/UPDATE_MIRRORS=1/' /etc/rkhunter.conf
   - sed -i -e 's/^MIRRORS_MODE=1$/MIRRORS_MODE=0/' /etc/rkhunter.conf
   - sed -i -e 's/^WEB_CMD="[^"]*"$/WEB_CMD=""/' /etc/rkhunter.conf
-
   - rkhunter --update
 ## Update rookit hunter properties definition list:
   - rkhunter --propupd
