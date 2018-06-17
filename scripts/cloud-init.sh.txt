@@ -164,9 +164,9 @@ runcmd:
   - apt update -y
   - DEBIAN_FRONTEND=noninteractive apt install -y php7.1-fpm php7.1-common php7.1-mysqlnd php7.1-xmlrpc php7.1-curl php7.1-gd php7.1-imagick php7.1-cli php-pear php7.1-dev php7.1-imap php7.1-mcrypt
 ## Back up our php.ini configuration file:
-  - cp /etc/php/7.1/fpm/php.ini /etc/php/7.1/fpm/_php.ini.original
+  - cp /etc/php/7.2/fpm/php.ini /etc/php/7.2/fpm/_php.ini.original
 ## Set cgi fix_pathinfo to true (we're protected in other ways, and I absolutely could not get PHP to work without enabling this):
-  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.1/fpm/php.ini
+  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.2/fpm/php.ini
 
 ############################
 ## ADDING APT FOR MARIADB ##
@@ -351,16 +351,16 @@ runcmd:
 ## Test our nginx config
   - nginx -t
 ## Change php user and group to new user
-  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
 ## Test our php config
-  - php-fpm7.1 -t
+  - php-fpm7.2 -t
 ## Start PHP:
-  - service php7.1-fpm start
+  - service php7.2-fpm start
 ## Start nginx:
   - service nginx start
 
