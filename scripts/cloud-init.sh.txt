@@ -149,8 +149,8 @@ runcmd:
   - printf '=======\n\n'
   - wget http://nginx.org/keys/nginx_signing.key -P /home/__username__/
   - apt-key add /home/__username__/nginx_signing.key
-  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ cosmic nginx' >> /etc/apt/sources.list
-  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ cosmic nginx' >> /etc/apt/sources.list
+  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ bionic nginx' >> /etc/apt/sources.list
+  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ bionic nginx' >> /etc/apt/sources.list
   - apt update -yq
   - DEBIAN_FRONTEND=noninteractive apt install -yq nginx
 
@@ -175,7 +175,7 @@ runcmd:
   - echo 'ADDING APT FOR MARIADB'
   - printf '=======\n\n'
   - apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-  - add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirror.sax.uk.as61049.net/mariadb/repo/10.1/ubuntu cosmic main' -y
+  - add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirror.sax.uk.as61049.net/mariadb/repo/10.1/ubuntu bionic main' -y
   - apt update -y
 
 ##############
@@ -288,7 +288,7 @@ runcmd:
 ## Add a keyserver for grabbing the latest version of lynis off their own package server:
   - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
 ## Add the URL for lynis' package server:
-  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ cosmic main' >> /etc/apt/sources.list.d/cisofy-lynis.list
+  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ bionic main' >> /etc/apt/sources.list.d/cisofy-lynis.list
 ## Grab latest apt updates now that we can query lynis' package server, and install the latest available version of lynis:
   - apt update -yq
   - DEBIAN_FRONTEND=noninteractive apt install -yq lynis
