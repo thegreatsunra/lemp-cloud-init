@@ -295,7 +295,7 @@ runcmd:
   - echo 'CONFIGURING MORE PHP AND NGINX'
   - printf '=======\n\n'
 ## Stop PHP because we're gonna make index.php a legit default route file:
-  - service php7.1-fpm stop
+  - service php7.2-fpm stop
 ## Stop nginx because we're going to configure some PHP stuff and a whole lotta server blocks:
   - service nginx stop
 
