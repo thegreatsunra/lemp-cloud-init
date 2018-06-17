@@ -1,4 +1,4 @@
-user                                __username__;
+user                                __placeholder_username__;
 worker_processes                    1;
 pid                                 /var/run/nginx.pid;
 

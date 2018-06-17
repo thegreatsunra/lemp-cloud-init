@@ -405,3 +405,8 @@ power_state:
 ## __email@domain.tld__ - the email address of the primary admin user
 ## __domain.tld__ - the domain for your website that will be hosted by nginx (e.g. thegreatsunra.com)
 ## __temporary_password_change_me_immediately__ - a temporary password that you will change immediately after logging into the server
+
+#############################
+## PLACEHOLDERS NOT TO REPLACE ##
+#############################
+## __placeholder_username__ - DO NOT change this, as we're using to check a placeholder variable in a static template we curl off Github, and replace THAT value with your replaced __username__ value
