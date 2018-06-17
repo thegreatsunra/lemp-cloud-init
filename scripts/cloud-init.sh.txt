@@ -349,7 +349,7 @@ runcmd:
 ## Grab our new nginx configuration file:
   - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/develop/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
 ## Replace the placeholder username in our nginx config with 
-  - sed -i -e 's/user[ ]*__placeholder_username__/user             __username__/' /etc/nginx/nginx.conf
+  - sed -i -e 's/user[ ]*__placeholder_username__/user                                __username__/' /etc/nginx/nginx.conf
 ## Update fastcgi_params for PHP
   - mv /etc/nginx/fastcgi_params /etc/nginx/fastcgi_params.original
   - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/develop/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
