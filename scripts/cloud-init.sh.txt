@@ -162,7 +162,7 @@ runcmd:
   - printf '=======\n\n'
   - LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php
   - apt update -y
-  - DEBIAN_FRONTEND=noninteractive apt install -y php7.1-fpm php7.1-common php7.1-mysqlnd php7.1-xmlrpc php7.1-curl php7.1-gd php7.1-imagick php7.1-cli php-pear php7.1-dev php7.1-imap php7.1-mcrypt
+  - DEBIAN_FRONTEND=noninteractive apt install -y php7.2-fpm php7.2-common php7.2-mbstring php7.2-xmlrpc php7.2-gd php7.2-xml php7.2-mysql php7.2-cli php7.2-zip php7.2-curl
 ## Back up our php.ini configuration file:
   - cp /etc/php/7.2/fpm/php.ini /etc/php/7.2/fpm/_php.ini.original
 ## Set cgi fix_pathinfo to true (we're protected in other ways, and I absolutely could not get PHP to work without enabling this):
