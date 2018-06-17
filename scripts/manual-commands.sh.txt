@@ -48,7 +48,7 @@ sudo nginx -t
 ## Start nginx
 sudo service nginx start
 ## Start PHP (in case it hasn't started yet)
-sudo service php7.1-fpm start
+sudo service php7.2-fpm start
 
 ## Install and configure sendmail
 sudo apt install -yq sendmail sendmail-bin
