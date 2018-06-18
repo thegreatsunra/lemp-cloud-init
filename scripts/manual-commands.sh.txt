@@ -15,12 +15,8 @@ grc tail -fn+1 /var/log/cloud-init-output.log
 sudo passwd root
 sudo passwd __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__
 
-## omg password yes or maybe not who knows
+## Don't enter a password because we'll enter one later, even though it asks three times
 sudo apt install -y mariadb-server php-mysql
-
-## Install and configure mysql
-## This needs to go after the mariadb-server apt install line 
-sudo mysql_install_db
 
 ## Secure the mysql installation
 ## Steps for the following task
