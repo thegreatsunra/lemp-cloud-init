@@ -15,12 +15,12 @@ grc tail -fn+1 /var/log/cloud-init-output.log
 sudo passwd root
 sudo passwd __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__
 
-## Install and configure mysql
-## I think this goes first now, because otherwise mariadb errors out when it installs and you end up with no system tables, root user, or root user password...
-sudo mysql_install_db
-
-## You'll be prompted to enter a new password for the mysql root user
+## omg password yes or maybe not who knows
 sudo apt install -y mariadb-server php-mysql
+
+## Install and configure mysql
+## This needs to go after the mariadb-server apt install line 
+sudo mysql_install_db
 
 ## Secure the mysql installation
 ## Steps for the following task
