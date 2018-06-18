@@ -162,11 +162,11 @@ runcmd:
   - printf '=======\n\n'
   - LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php
   - apt update -y
-  - DEBIAN_FRONTEND=noninteractive apt install -y php7.1-fpm php7.1-common php7.1-mysqlnd php7.1-xmlrpc php7.1-curl php7.1-gd php7.1-imagick php7.1-cli php-pear php7.1-dev php7.1-imap php7.1-mcrypt
+  - DEBIAN_FRONTEND=noninteractive apt install -y php7.2-fpm php7.2-common php7.2-mbstring php7.2-xmlrpc php7.2-gd php7.2-xml php7.2-mysql php7.2-cli php7.2-zip php7.2-curl
 ## Back up our php.ini configuration file:
-  - cp /etc/php/7.1/fpm/php.ini /etc/php/7.1/fpm/_php.ini.original
+  - cp /etc/php/7.2/fpm/php.ini /etc/php/7.2/fpm/_php.ini.original
 ## Set cgi fix_pathinfo to true (we're protected in other ways, and I absolutely could not get PHP to work without enabling this):
-  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.1/fpm/php.ini
+  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.2/fpm/php.ini
 
 ############################
 ## ADDING APT FOR MARIADB ##
@@ -175,7 +175,7 @@ runcmd:
   - echo 'ADDING APT FOR MARIADB'
   - printf '=======\n\n'
   - apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-  - add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirror.sax.uk.as61049.net/mariadb/repo/10.1/ubuntu xenial main' -y
+  - add-apt-repository -y 'deb [arch=amd64,i386,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu xenial main'
   - apt update -y
 
 ##############
@@ -270,8 +270,11 @@ runcmd:
   - printf '\n\n=======\n'
   - echo 'CONFIGURING RKHUNTER'
   - printf '=======\n\n'
-## Update rookit hunter and update its properties definition list:
-  - rkhunter --update
+## Don't update rkhunter, as updating has been disabled due to an attack vector
+## This has been fixed in rkhunter 1.4.6, but xenial only installs 1.4.2, so I don't think the attack vector is patched
+## https://askubuntu.com/questions/989492/rkhunter-doesnt-update-in-ubuntu-17-10
+  # - rkhunter --update
+## Update rookit hunter properties definition list:
   - rkhunter --propupd
 
 ###########
@@ -295,7 +298,7 @@ runcmd:
   - echo 'CONFIGURING MORE PHP AND NGINX'
   - printf '=======\n\n'
 ## Stop PHP because we're gonna make index.php a legit default route file:
-  - service php7.1-fpm stop
+  - service php7.2-fpm stop
 ## Stop nginx because we're going to configure some PHP stuff and a whole lotta server blocks:
   - service nginx stop
 
@@ -319,7 +322,7 @@ runcmd:
 ## Add the sites-available and sites-enabled folders because the nginx mainline doesn't have them
   - mkdir /etc/nginx/sites-available /etc/nginx/sites-enabled
 ## Grab our nginx sites-available config files off GitHub Gist and make 'em
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.4.0/templates/etc/nginx/sites-available/domain.tld.txt -o /etc/nginx/sites-available/__domain.tld__
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/develop/templates/etc/nginx/sites-available/domain.tld.txt -o /etc/nginx/sites-available/__domain.tld__
 ## Symlink all server block sites-available definition files in the sites-enabled folder:
   - ln -s /etc/nginx/sites-available/__domain.tld__ /etc/nginx/sites-enabled/
 ## Change owner of public web server files to default user:
@@ -342,23 +345,25 @@ runcmd:
 ## Back up our original nginx configuration file:
   - mv /etc/nginx/nginx.conf /etc/nginx/nginx.original
 ## Grab our new nginx configuration file:
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.4.0/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/develop/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
+## Replace the placeholder username in our nginx config with 
+  - sed -i -e 's/user[ ]*__placeholder_username__/user                                __username__/' /etc/nginx/nginx.conf
 ## Update fastcgi_params for PHP
   - mv /etc/nginx/fastcgi_params /etc/nginx/fastcgi_params.original
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.4.0/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/develop/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
 ## Test our nginx config
   - nginx -t
 ## Change php user and group to new user
-  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.1/fpm/pool.d/www.conf
-  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.1/fpm/pool.d/www.conf
+  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
 ## Test our php config
-  - php-fpm7.1 -t
+  - php-fpm7.2 -t
 ## Start PHP:
-  - service php7.1-fpm start
+  - service php7.2-fpm start
 ## Start nginx:
   - service nginx start
 
@@ -397,3 +402,8 @@ power_state:
 ## __email@domain.tld__ - the email address of the primary admin user
 ## __domain.tld__ - the domain for your website that will be hosted by nginx (e.g. thegreatsunra.com)
 ## __temporary_password_change_me_immediately__ - a temporary password that you will change immediately after logging into the server
+
+#############################
+## PLACEHOLDERS NOT TO REPLACE ##
+#############################
+## __placeholder_username__ - DO NOT change this, as we're using to check a placeholder variable in a static template we curl off Github, and replace THAT value with your replaced __username__ value

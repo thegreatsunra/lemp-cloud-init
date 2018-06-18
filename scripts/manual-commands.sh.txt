@@ -15,12 +15,10 @@ grc tail -fn+1 /var/log/cloud-init-output.log
 sudo passwd root
 sudo passwd __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__
 
-## Install and configure mysql
-## You'll be prompted to enter a new password for the mysql root user
+## Don't enter a password because we'll enter one later, even though it asks three times
 sudo apt install -y mariadb-server php-mysql
-## The following task will appear to freeze and timeout after 30 seconds
-## Don't interrupt it, though, as it seems to achieve the desired results anyway
-sudo mysql_install_db
+
+## Secure the mysql installation
 ## Steps for the following task
 ## 1) supply mysql root password
 ## 2) change root password? N
@@ -37,9 +35,6 @@ GRANT ALL PRIVILEGES ON __mysql_db_name__.* TO '__mysql_user_name__'@'localhost'
 FLUSH PRIVILEGES;
 exit;
 
-## Change the placeholder user value in /etc/nginx/nginx.conf to your username
-sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/nginx.conf
-
 sudo sed -i -e 's/__username__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__/' /etc/nginx/sites-available/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__
 sudo sed -i -e 's/__domain.tld__/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__/' /etc/nginx/sites-available/__REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_DOMAIN__
 
@@ -48,10 +43,14 @@ sudo nginx -t
 ## Start nginx
 sudo service nginx start
 ## Start PHP (in case it hasn't started yet)
-sudo service php7.1-fpm start
+sudo service php7.2-fpm start
 
 ## Install and configure sendmail
+## This command will take a long time and appear to freeze
+## You may even need to bail out of it and run some things manually
+## https://askubuntu.com/questions/937666/ubuntu-16-04-command-line-sendmail-installation-hanged
 sudo apt install -yq sendmail sendmail-bin
+
 # Configure with existing? Y
 # Configure with existing? Y
 # Reload? Y
