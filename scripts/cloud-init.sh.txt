@@ -149,8 +149,8 @@ runcmd:
   - printf '=======\n\n'
   - wget http://nginx.org/keys/nginx_signing.key -P /home/__username__/
   - apt-key add /home/__username__/nginx_signing.key
-  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ bionic nginx' >> /etc/apt/sources.list
-  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ bionic nginx' >> /etc/apt/sources.list
+  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
+  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
   - apt update -yq
   - DEBIAN_FRONTEND=noninteractive apt install -yq nginx
 
@@ -175,7 +175,7 @@ runcmd:
   - echo 'ADDING APT FOR MARIADB'
   - printf '=======\n\n'
   - apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-  - add-apt-repository -y 'deb [arch=amd64,i386,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu bionic main'
+  - add-apt-repository -y 'deb [arch=amd64,i386,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu xenial main'
   - apt update -y
 
 ##############
