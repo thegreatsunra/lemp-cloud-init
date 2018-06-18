@@ -270,12 +270,10 @@ runcmd:
   - printf '\n\n=======\n'
   - echo 'CONFIGURING RKHUNTER'
   - printf '=======\n\n'
-## Update rkhunter config so we can update rkhunter via the command line again, since we're using verison 1.4.6 or later and the attack vector has been fixed
+## Don't update rkhunter, as updating has been disabled due to an attack vector
+## This has been fixed in rkhunter 1.4.6, but xenial only installs 1.4.2, so I don't think the attack vector is patched
 ## https://askubuntu.com/questions/989492/rkhunter-doesnt-update-in-ubuntu-17-10
-  - sed -i -e 's/^UPDATE_MIRRORS=0$/UPDATE_MIRRORS=1/' /etc/rkhunter.conf
-  - sed -i -e 's/^MIRRORS_MODE=1$/MIRRORS_MODE=0/' /etc/rkhunter.conf
-  - sed -i -e 's/^WEB_CMD="[^"]*"$/WEB_CMD=""/' /etc/rkhunter.conf
-  - rkhunter --update
+  # - rkhunter --update
 ## Update rookit hunter properties definition list:
   - rkhunter --propupd
 
