@@ -16,7 +16,7 @@ sudo passwd root
 sudo passwd __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__
 
 ## Don't enter a password because we'll enter one later, even though it asks three times
-sudo apt install -y mariadb-server php-mysql
+sudo apt install -y mariadb-server php7.3-mysql
 
 ## Secure the mysql installation
 ## Steps for the following task
