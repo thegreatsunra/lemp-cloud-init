@@ -386,6 +386,7 @@ runcmd:
   - printf '=======\n\n'
   - apt update -yq
   - apt upgrade -yq
+  - apt autoremove -yq
 
 ################
 ## END RUNCMD ##
