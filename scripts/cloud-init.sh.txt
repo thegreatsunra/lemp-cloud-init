@@ -4,6 +4,7 @@ package_upgrade: true
 packages:
   - apt-listchanges
   - apt-show-versions
+  - apt-transport-https
   - chkrootkit
   - debsecan
   - debsums
@@ -49,34 +50,35 @@ runcmd:
   - cp /etc/ssh/sshd_config /etc/ssh/_sshd_config.original
 ## Change the default SSH port to something else:
 #  - sed -i -e '/^Port/s/^.*$/Port 4444/' /etc/ssh/sshd_config
-## If there's a duplicate PasswordAuthentication line, get rid of it: (?)
-  - sed -i -e '/^PasswordAuthentication/s/^.*$//' /etc/ssh/sshd_config
-## If there's a commented-out PasswordAuthentication line, disable password authentication:
-  - sed -i -e '/^#PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+## Disable password authentication:
+  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
 ## Prevent root login via SSH:
   - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
 ## Disable X11Forwarding:
   - sed -i -e '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
 ## Whatever is currently set for UsePrivilegeSeparation, set it to sandbox:
-  - sed -i -e '/^UsePrivilegeSeparation/s/^.*$/UsePrivilegeSeparation sandbox/' /etc/ssh/sshd_config
+#  - sed -i -e '/^UsePrivilegeSeparation/s/^.*$/UsePrivilegeSeparation sandbox/' /etc/ssh/sshd_config
 ## Disable TCPKeepAlive:
-  - sed -i -e '/^TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
+  - sed -i -e '/^#TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
 ## Set logging level to verbose: (I think some log analysis tools count on this)
-  - sed -i -e '/^LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
-## Add a comment that we're gonna add some things below:
+  - sed -i -e '/^#LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
+## Disable AllowTcpForwarding:
+  - sed -i -e '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+## Disable AllowAgentForwarding:
+  - sed -i -e '/^#AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+## Set the maximum sessions to 2:
+  - sed -i -e '/^#MaxSessions/s/^.*$/MaxSessions 2/' /etc/ssh/sshd_config
+## Set the maximum auth tries to 2:
+  - sed -i -e '/^#MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
+## Set client alive count max to 2:
+  - sed -i -e '/^#ClientAliveCountMax/s/^.*$/ClientAliveCountMax 2/' /etc/ssh/sshd_config
+## Disable compression:
+  - sed -i -e '/^#Compression/s/^.*$/Compression no/' /etc/ssh/sshd_config
+## Add a comment that we're adding new config things below
   - sed -i -e '$a# Added by cloud-config init process' /etc/ssh/sshd_config
 ## Restrict SSH access to only our one allowed user:
   - sed -i -e '$aAllowUsers __username__' /etc/ssh/sshd_config
-## Disable AllowTcpForwarding:
-  - sed -i -e '$aAllowTcpForwarding no' /etc/ssh/sshd_config
-## Disable compression:
-  - sed -i -e '$aCompression no' /etc/ssh/sshd_config
-## Disable AllowAgentForwarding:
-  - sed -i -e '$aAllowAgentForwarding no' /etc/ssh/sshd_config
-## Set UsePrivilegeSeparation to sandbox: (you already do this above, though)
-#  - sed -i -e '$aUsePrivilegeSeparation sandbox' /etc/ssh/sshd_config
-## Set the maximum sessions to 2:
-  - sed -i -e '$aMaxSessions 2' /etc/ssh/sshd_config
+
 ## Now that we're done securing SSH, restart it: (this might disrupt SSH access, but so far that doesn't seem to be happening)
   - /etc/init.d/ssh restart
 
@@ -138,8 +140,8 @@ runcmd:
   - printf '\n\n=======\n'
   - echo 'CHANGING PASSWDS'
   - printf '=======\n\n'
-  - echo "root:__temporary_password_change_me_immediately__"|chpasswd
-  - echo "__username__:__temporary_password_change_me_immediately__"|chpasswd
+  - echo 'root:__temporary_password_change_me_immediately__' | chpasswd
+  - echo '__username__:__temporary_password_change_me_immediately__' | chpasswd
 
 ###########
 ## NGINX ##
@@ -149,8 +151,8 @@ runcmd:
   - printf '=======\n\n'
   - wget http://nginx.org/keys/nginx_signing.key -P /home/__username__/
   - apt-key add /home/__username__/nginx_signing.key
-  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
-  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx' >> /etc/apt/sources.list
+  - echo 'deb http://nginx.org/packages/mainline/ubuntu/ bionic nginx' >> /etc/apt/sources.list
+  - echo 'deb-src http://nginx.org/packages/mainline/ubuntu/ bionic nginx' >> /etc/apt/sources.list
   - apt update -yq
   - DEBIAN_FRONTEND=noninteractive apt install -yq nginx
 
@@ -162,11 +164,11 @@ runcmd:
   - printf '=======\n\n'
   - LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php
   - apt update -y
-  - DEBIAN_FRONTEND=noninteractive apt install -y php7.2-fpm php7.2-common php7.2-mbstring php7.2-xmlrpc php7.2-gd php7.2-xml php7.2-mysql php7.2-cli php7.2-zip php7.2-curl
+  - DEBIAN_FRONTEND=noninteractive apt install -y php7.3-fpm php7.3-common php7.3-mbstring php7.3-xmlrpc php7.3-gd php7.3-xml php7.3-mysql php7.3-cli php7.3-zip php7.3-curl
 ## Back up our php.ini configuration file:
-  - cp /etc/php/7.2/fpm/php.ini /etc/php/7.2/fpm/_php.ini.original
+  - cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/_php.ini.original
 ## Set cgi fix_pathinfo to true (we're protected in other ways, and I absolutely could not get PHP to work without enabling this):
-  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.2/fpm/php.ini
+  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.3/fpm/php.ini
 
 ############################
 ## ADDING APT FOR MARIADB ##
@@ -175,7 +177,7 @@ runcmd:
   - echo 'ADDING APT FOR MARIADB'
   - printf '=======\n\n'
   - apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-  - add-apt-repository -y 'deb [arch=amd64,i386,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu xenial main'
+  - add-apt-repository -y 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu bionic main'
   - apt update -y
 
 ##############
@@ -229,6 +231,16 @@ runcmd:
 ## Show the rules that are active:
   - ufw status verbose
 
+###########
+## FSTAB ##
+###########
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING FSTAB'
+  - printf '=======\n\n'
+# https://hostadvice.com/how-to/how-to-harden-your-ubuntu-18-04-server/
+# Enable secure shared memory:
+  - sed -i -e '$anone /run/shm tmpfs defaults,ro 0 0' /etc/fstab
+
 ##############
 ## LOGWATCH ##
 ##############
@@ -253,7 +265,7 @@ runcmd:
 ## Back up our blacklist.conf configuration file:
   - cp /etc/modprobe.d/blacklist.conf /etc/modprobe.d/blacklist.original
 ## Blacklist USB storage:
-  - echo "blacklist usb-storage" | tee -a /etc/modprobe.d/blacklist.conf
+  - echo 'blacklist usb-storage' | tee -a /etc/modprobe.d/blacklist.conf
 
 ###############
 ## INITRAMFS ##
@@ -270,10 +282,7 @@ runcmd:
   - printf '\n\n=======\n'
   - echo 'CONFIGURING RKHUNTER'
   - printf '=======\n\n'
-## Don't update rkhunter, as updating has been disabled due to an attack vector
-## This has been fixed in rkhunter 1.4.6, but xenial only installs 1.4.2, so I don't think the attack vector is patched
-## https://askubuntu.com/questions/989492/rkhunter-doesnt-update-in-ubuntu-17-10
-  # - rkhunter --update
+  - rkhunter --update
 ## Update rookit hunter properties definition list:
   - rkhunter --propupd
 
@@ -285,8 +294,11 @@ runcmd:
   - printf '=======\n\n'
 ## Add a keyserver for grabbing the latest version of lynis off their own package server:
   - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C80E383C3DE9F082E01391A0366C67DE91CA5D5F
+## Skip translations
+  - echo 'Acquire::Languages "none";' | sudo tee /etc/apt/apt.conf.d/99disable-translations
 ## Add the URL for lynis' package server:
-  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ xenial main' >> /etc/apt/sources.list.d/cisofy-lynis.list
+  - echo 'deb https://packages.cisofy.com/community/lynis/deb/ stable main' | sudo tee /etc/apt/sources.list.d/cisofy-lynis.list
+
 ## Grab latest apt updates now that we can query lynis' package server, and install the latest available version of lynis:
   - apt update -yq
   - DEBIAN_FRONTEND=noninteractive apt install -yq lynis
@@ -298,7 +310,7 @@ runcmd:
   - echo 'CONFIGURING MORE PHP AND NGINX'
   - printf '=======\n\n'
 ## Stop PHP because we're gonna make index.php a legit default route file:
-  - service php7.2-fpm stop
+  - service php7.3-fpm stop
 ## Stop nginx because we're going to configure some PHP stuff and a whole lotta server blocks:
   - service nginx stop
 
@@ -322,7 +334,7 @@ runcmd:
 ## Add the sites-available and sites-enabled folders because the nginx mainline doesn't have them
   - mkdir /etc/nginx/sites-available /etc/nginx/sites-enabled
 ## Grab our nginx sites-available config files off GitHub Gist and make 'em
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.6.1/templates/etc/nginx/sites-available/domain.tld.txt -o /etc/nginx/sites-available/__domain.tld__
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/feature/use-ubuntu-1804/templates/etc/nginx/sites-available/domain.tld.txt -o /etc/nginx/sites-available/__domain.tld__
 ## Symlink all server block sites-available definition files in the sites-enabled folder:
   - ln -s /etc/nginx/sites-available/__domain.tld__ /etc/nginx/sites-enabled/
 ## Change owner of public web server files to default user:
@@ -345,25 +357,27 @@ runcmd:
 ## Back up our original nginx configuration file:
   - mv /etc/nginx/nginx.conf /etc/nginx/nginx.original
 ## Grab our new nginx configuration file:
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.6.1/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/feature/use-ubuntu-1804/templates/etc/nginx/nginx.conf.txt -o /etc/nginx/nginx.conf
 ## Replace the placeholder username in our nginx config with 
   - sed -i -e 's/user[ ]*__placeholder_username__/user                                __username__/' /etc/nginx/nginx.conf
 ## Update fastcgi_params for PHP
   - mv /etc/nginx/fastcgi_params /etc/nginx/fastcgi_params.original
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.6.1/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/feature/use-ubuntu-1804/templates/etc/nginx/fastcgi_params.txt -o /etc/nginx/fastcgi_params
 ## Test our nginx config
   - nginx -t
 ## Change php user and group to new user
-  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+## This line doesn't exist anymore in PHP 7.3:
+#  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
+## This line doesn't exist anymore in PHP 7.3:
+#  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
 ## Test our php config
-  - php-fpm7.2 -t
+  - php-fpm7.3 -t
 ## Start PHP:
-  - service php7.2-fpm start
+  - service php7.3-fpm start
 ## Start nginx:
   - service nginx start
 
@@ -375,6 +389,7 @@ runcmd:
   - printf '=======\n\n'
   - apt update -yq
   - apt upgrade -yq
+  - apt autoremove -yq
 
 ################
 ## END RUNCMD ##
