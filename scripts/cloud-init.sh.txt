@@ -4,6 +4,7 @@ package_upgrade: true
 packages:
   - apt-listchanges
   - apt-show-versions
+  - apt-transport-https
   - chkrootkit
   - debsecan
   - debsums
