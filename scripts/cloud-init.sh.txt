@@ -66,8 +66,6 @@ runcmd:
   - sed -i -e '$aAllowUsers __username__' /etc/ssh/sshd_config
   - sed -i -e '/^#LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
 ## Disable AllowTcpForwarding:
-## Disable compression:
-  - sed -i -e '$aCompression no' /etc/ssh/sshd_config
   - sed -i -e '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
 ## Disable AllowAgentForwarding:
 ## Set UsePrivilegeSeparation to sandbox: (you already do this above, though)
@@ -79,6 +77,8 @@ runcmd:
   - sed -i -e '/^#MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
 ## Set client alive count max to 2:
   - sed -i -e '/^#ClientAliveCountMax/s/^.*$/ClientAliveCountMax 2/' /etc/ssh/sshd_config
+## Disable compression:
+  - sed -i -e '/^#Compression/s/^.*$/Compression no/' /etc/ssh/sshd_config
 ## Now that we're done securing SSH, restart it: (this might disrupt SSH access, but so far that doesn't seem to be happening)
   - /etc/init.d/ssh restart
 
