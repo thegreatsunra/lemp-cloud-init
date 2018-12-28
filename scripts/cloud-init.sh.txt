@@ -49,10 +49,8 @@ runcmd:
   - cp /etc/ssh/sshd_config /etc/ssh/_sshd_config.original
 ## Change the default SSH port to something else:
 #  - sed -i -e '/^Port/s/^.*$/Port 4444/' /etc/ssh/sshd_config
-## If there's a duplicate PasswordAuthentication line, get rid of it: (?)
-  - sed -i -e '/^PasswordAuthentication/s/^.*$//' /etc/ssh/sshd_config
-## If there's a commented-out PasswordAuthentication line, disable password authentication:
-  - sed -i -e '/^#PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+## Disable password authentication:
+  - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
 ## Prevent root login via SSH:
   - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
 ## Disable X11Forwarding:
