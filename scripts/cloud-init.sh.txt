@@ -60,11 +60,11 @@ runcmd:
 ## Disable TCPKeepAlive:
   - sed -i -e '/^#TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
 ## Set logging level to verbose: (I think some log analysis tools count on this)
-  - sed -i -e '/^LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
 ## Add a comment that we're gonna add some things below:
   - sed -i -e '$a# Added by cloud-config init process' /etc/ssh/sshd_config
 ## Restrict SSH access to only our one allowed user:
   - sed -i -e '$aAllowUsers __username__' /etc/ssh/sshd_config
+  - sed -i -e '/^#LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
 ## Disable AllowTcpForwarding:
   - sed -i -e '$aAllowTcpForwarding no' /etc/ssh/sshd_config
 ## Disable compression:
