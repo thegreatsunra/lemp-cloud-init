@@ -56,7 +56,7 @@ runcmd:
 ## Disable X11Forwarding:
   - sed -i -e '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
 ## Whatever is currently set for UsePrivilegeSeparation, set it to sandbox:
-  - sed -i -e '/^UsePrivilegeSeparation/s/^.*$/UsePrivilegeSeparation sandbox/' /etc/ssh/sshd_config
+#  - sed -i -e '/^UsePrivilegeSeparation/s/^.*$/UsePrivilegeSeparation sandbox/' /etc/ssh/sshd_config
 ## Disable TCPKeepAlive:
   - sed -i -e '/^TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
 ## Set logging level to verbose: (I think some log analysis tools count on this)
