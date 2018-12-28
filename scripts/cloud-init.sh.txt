@@ -334,7 +334,7 @@ runcmd:
 ## Add the sites-available and sites-enabled folders because the nginx mainline doesn't have them
   - mkdir /etc/nginx/sites-available /etc/nginx/sites-enabled
 ## Grab our nginx sites-available config files off GitHub Gist and make 'em
-  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/0.6.1/templates/etc/nginx/sites-available/domain.tld.txt -o /etc/nginx/sites-available/__domain.tld__
+  - curl https://raw.githubusercontent.com/thegreatsunra/lemp-cloud-init/feature/use-ubuntu-1804/templates/etc/nginx/sites-available/domain.tld.txt -o /etc/nginx/sites-available/__domain.tld__
 ## Symlink all server block sites-available definition files in the sites-enabled folder:
   - ln -s /etc/nginx/sites-available/__domain.tld__ /etc/nginx/sites-enabled/
 ## Change owner of public web server files to default user:
