@@ -370,8 +370,10 @@ runcmd:
   - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
   - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
   - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
-  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
-  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
+## This line doesn't exist anymore in PHP 7.3:
+#  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
+## This line doesn't exist anymore in PHP 7.3:
+#  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
 ## Test our php config
   - php-fpm7.3 -t
 ## Start PHP:
