@@ -230,6 +230,16 @@ runcmd:
 ## Show the rules that are active:
   - ufw status verbose
 
+###########
+## FSTAB ##
+###########
+  - printf '\n\n=======\n'
+  - echo 'CONFIGURING FSTAB'
+  - printf '=======\n\n'
+# https://hostadvice.com/how-to/how-to-harden-your-ubuntu-18-04-server/
+# Enable secure shared memory:
+  - sed -i -e '$anone /run/shm tmpfs defaults,ro 0 0' /etc/fstab
+
 ##############
 ## LOGWATCH ##
 ##############
