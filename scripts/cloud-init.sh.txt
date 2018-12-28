@@ -271,10 +271,7 @@ runcmd:
   - printf '\n\n=======\n'
   - echo 'CONFIGURING RKHUNTER'
   - printf '=======\n\n'
-## Don't update rkhunter, as updating has been disabled due to an attack vector
-## This has been fixed in rkhunter 1.4.6, but xenial only installs 1.4.2, so I don't think the attack vector is patched
-## https://askubuntu.com/questions/989492/rkhunter-doesnt-update-in-ubuntu-17-10
-  # - rkhunter --update
+  - rkhunter --update
 ## Update rookit hunter properties definition list:
   - rkhunter --propupd
 
