@@ -163,11 +163,11 @@ runcmd:
   - printf '=======\n\n'
   - LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php
   - apt update -y
-  - DEBIAN_FRONTEND=noninteractive apt install -y php7.2-fpm php7.2-common php7.2-mbstring php7.2-xmlrpc php7.2-gd php7.2-xml php7.2-mysql php7.2-cli php7.2-zip php7.2-curl
+  - DEBIAN_FRONTEND=noninteractive apt install -y php7.3-fpm php7.3-common php7.3-mbstring php7.3-xmlrpc php7.3-gd php7.3-xml php7.3-mysql php7.3-cli php7.3-zip php7.3-curl
 ## Back up our php.ini configuration file:
-  - cp /etc/php/7.2/fpm/php.ini /etc/php/7.2/fpm/_php.ini.original
+  - cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/_php.ini.original
 ## Set cgi fix_pathinfo to true (we're protected in other ways, and I absolutely could not get PHP to work without enabling this):
-  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.2/fpm/php.ini
+  - sed -i -e 's/fix_pathinfo=.*$/cgi.fix_pathinfo=1/' /etc/php/7.3/fpm/php.ini
 
 ############################
 ## ADDING APT FOR MARIADB ##
