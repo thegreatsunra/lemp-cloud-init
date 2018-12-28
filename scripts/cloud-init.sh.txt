@@ -300,7 +300,7 @@ runcmd:
   - echo 'CONFIGURING MORE PHP AND NGINX'
   - printf '=======\n\n'
 ## Stop PHP because we're gonna make index.php a legit default route file:
-  - service php7.2-fpm stop
+  - service php7.3-fpm stop
 ## Stop nginx because we're going to configure some PHP stuff and a whole lotta server blocks:
   - service nginx stop
 
@@ -356,16 +356,16 @@ runcmd:
 ## Test our nginx config
   - nginx -t
 ## Change php user and group to new user
-  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
-  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.2/fpm/pool.d/www.conf
+  - sed -i -e 's/user = www-data/user = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/group = www-data/group = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.owner = www-data/listen.owner = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/listen.group = www-data/listen.group = __username__/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
+  - sed -i -e 's/post_max_size = 8M/post_max_size = 64M/' /etc/php/7.3/fpm/pool.d/www.conf
 ## Test our php config
-  - php-fpm7.2 -t
+  - php-fpm7.3 -t
 ## Start PHP:
-  - service php7.2-fpm start
+  - service php7.3-fpm start
 ## Start nginx:
   - service nginx start
 
