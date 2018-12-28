@@ -58,7 +58,7 @@ runcmd:
 ## Whatever is currently set for UsePrivilegeSeparation, set it to sandbox:
 #  - sed -i -e '/^UsePrivilegeSeparation/s/^.*$/UsePrivilegeSeparation sandbox/' /etc/ssh/sshd_config
 ## Disable TCPKeepAlive:
-  - sed -i -e '/^TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
+  - sed -i -e '/^#TCPKeepAlive/s/^.*$/TCPKeepAlive no/' /etc/ssh/sshd_config
 ## Set logging level to verbose: (I think some log analysis tools count on this)
   - sed -i -e '/^LogLevel/s/^.*$/LogLevel VERBOSE/' /etc/ssh/sshd_config
 ## Add a comment that we're gonna add some things below:
