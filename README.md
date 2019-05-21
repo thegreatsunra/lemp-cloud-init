@@ -86,4 +86,4 @@ ssh username@ip.address.of.server
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2018 Dane Petersen
+Copyright (c) 2017-2019 Dane Petersen
