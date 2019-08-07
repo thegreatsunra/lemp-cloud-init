@@ -15,9 +15,15 @@ grc tail -fn+1 /var/log/cloud-init-output.log
 sudo passwd root
 sudo passwd __REPLACE_THIS_TEXT_WITH_YOUR_ACTUAL_USERNAME__
 
+sudo apt install -y php7.3-mysql
+## Install MariaDB 1/2 times (this will error out)
 ## Don't enter a password because we'll enter one later, even though it asks three times
-sudo apt install -y mariadb-server php7.3-mysql
+sudo apt install -y mariadb-server
 sudo mysql_install_db
+## Install MariaDB 2/2 times (this should succeed)
+## Don't enter a password because we'll enter one later
+sudo apt install -y mariadb-server
+sudo service mysqld start
 
 ## Secure the mysql installation
 ## Steps for the following task
